@@ -57,7 +57,12 @@ class FormPluginBase(CMSPluginBase):
             data = None
 
             if hasattr(request, 'session'):
-                data = QueryDict(request.session.get(get_session_key(instance.pk)))
+                data = request.session.get(get_session_key(instance.pk))
+                try:
+                    data = QueryDict(data)
+                except TypeError:
+                    # the data must have already been saved as a dict. just use the dict until a string is saved
+                    pass
             elif request.GET.get('cmsplugin_form_plugin_id'):
                 # Sessions aren't available, see if we fell-back to GET params
                 plugin_id = request.GET.get('cmsplugin_form_plugin_id')
